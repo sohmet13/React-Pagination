@@ -1,0 +1,137 @@
+//fonts
+@import url(https://fonts.googleapis.com/css?family=Courgette);
+
+//colors
+//https://pigment.shapefactory.co/?d=0&s=0&a=E8E3DA&b=6B665E
+$shilo: #E8E3DA;
+$midnight: #6B665E;
+$midlight: #817C73;
+$shilolight: #FEFAF4;
+$flintdark: #5B564F;
+
+body {
+  background: $shilo;
+}
+h1 {
+  color: $midnight;
+  font: bold 35px Courgette;
+  text-align: center;
+}
+#ChooseTable {
+  text-align: center;
+  h2 {
+    color: $midnight;
+    font: 25px Courgette;
+    text-align: center;
+  }
+  button {
+    background: $midnight;
+    color: $shilo;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    width: 80px;
+    height: 40px;
+    border-radius: 5px;
+    margin: 0 35px;
+    &:hover {
+      background: $midlight;
+    }
+  } 
+}
+#table{
+  height: 600px;
+  position: relative;
+  background: $midnight;
+  min-width: 700px;
+  max-width: 900px;
+  margin: auto;
+  div {
+    input{
+      background: $shilo;
+      border: none;
+      outline-color: $shilolight;
+      margin: 40px 0 20px 5%;
+      height: 18px;
+      color: $midnight;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      outline: none;
+      width: 50px;
+      height: 20px;
+      margin: 0 10px;
+      background: $shilo;
+      color: $midnight;
+    }
+  }
+  table {
+    margin: auto;
+    min-width: 500px;
+    max-width: 800px;
+    width: 90%;
+    background: transparent;
+    color: $shilolight;
+    border-collapse: collapse;
+    overflow: hidden;
+    text-align: left;
+    border: 2px solid transparent;
+    tr {
+      border: solid 1px $shilo;
+      height: 40px;
+      th {
+        cursor: pointer;
+      }
+    }
+    .id {
+      padding-left: 10px;
+    }
+  }
+}
+p{
+  text-align: center;
+  margin-top: 20%;
+  i {
+    margin: auto;
+    color:$midnight;
+    font-size: 170px;
+  }
+}
+ul {
+  position: absolute;
+  bottom: 10px;
+  list-style-type: none;
+  li {
+    display: inline-block;   
+    padding-top: 5px;
+    text-align: center;
+    background: $shilo;
+    color: $midnight;
+    margin: 0 5px;
+    overflow: hidden;
+    a {
+      display: inline-block;
+      cursor: pointer;
+      height: 25px;
+      width: 30px;
+    }
+  }
+}
+.active {
+  background: $flintdark;
+  color: $shilo;
+}
+#inf {
+  position: absolute;
+  max-width: 55%;
+  top:10px;
+  right: 5%;
+  background: transparent;
+  margin: auto;
+  p {
+    color: $shilolight;
+    text-align: left;
+    margin: 10px;
+  }
+}
