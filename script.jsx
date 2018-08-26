@@ -1,3 +1,13 @@
+﻿const propTypesApp = {
+  check: PropTypes.bool.isRequired,
+  checkInf: PropTypes.bool.isRequired,
+  pageOfItems: PropTypes.array.isRequired,
+  data: PropTypes.array,
+  currentData: PropTypes.array,
+  name: PropTypes.string,
+  address: PropTypes.string
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -20,18 +30,17 @@ class App extends React.Component {
     this.setState({
       check: false,
       choice: event.target.value
-    })
+    });
   }
   getData() {
     let url;
     if (this.state.choice==='small') {
-      url="https://my.api.mockaroo.com/small_data.json?key=88b60d20" 
+      url="https://my.api.mockaroo.com/small_data.json?key=88b60d20"; 
     } else if (this.state.choice==='big') {
-      url="https://my.api.mockaroo.com/big_data.json?key=88b60d20"
-    }  
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {this.setState({ data: data, currentData: data })});
+      url="https://my.api.mockaroo.com/big_data.json?key=88b60d20";
+    } 
+    axios.get(url)
+      .then(data => {this.setState({ data: data.data, currentData: data.data})});
     }
    onChangePage(pageOfItems) {
         // update state with new page of items
@@ -49,13 +58,13 @@ class App extends React.Component {
    let data = this.state.data.filter(filter) 
     this.setState({
       currentData: (data.length>0) ? data : [{}]
-    })
+    });
   }
   sort(e) {
     let value = e.target.id || e.target.parentNode.id;
     let isSorted = this.sorted[value];
     let direction = isSorted ? 1 : -1;
-    let sort= (a, b) => {
+    let sort = (a, b) => {
       if (typeof a[value] ==='number' && typeof b[value]==='number') {
         {if (a[value] > b[value]) {return direction}
          if (a[value] < b[value]) {return direction * -1}
@@ -83,9 +92,8 @@ class App extends React.Component {
   inf(e) {
     let value = e.target.parentNode.id;
     let obj = this.state.data[value-1];
-    let name = obj.first_name+' '+obj.last_name
-    let address = obj.country+', '+obj.city +', '+ obj.address
-    //alert(address)
+    let name = obj.first_name+' '+obj.last_name;
+    let address = obj.country+', '+obj.city +', '+ obj.address;
     this.setState({
       checkInf: true,
       name: name,
@@ -113,6 +121,7 @@ class App extends React.Component {
                        <td key={a.phone}>{a.phone}</td>
                      </tr>
                 )}
+              {console.log(this.state.pageOfItems)}
              </table>
             <Pagination items={this.state.currentData} onChangePage={this.onChangePage}/>
           </div>}
@@ -133,7 +142,7 @@ class ChooseTable extends React.Component {
       <div id='ChooseTable'>
         <h2>What kind of data do you want to see on this page?</h2>
         <button type='button' onClick={this.props.load} value='big'>Big data</button>
-        <button type='button' onClick={this.props.load} value='small'>Small data</button>
+        <button type='button' onClick={this.props.load} value='small'>Small data</button> 
       </div>
     )
   }
@@ -163,12 +172,12 @@ class HeadTable extends React.Component {
   render() {
     return (
       <tr id='headTable'>
-                  <th id='id' onClick={this.props.sort}><i className={!this.props.sortCheck.id ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> id</th>
-                  <th id='first_name' onClick={this.props.sort}><i className={!this.props.sortCheck.first_name ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> First name</th>
-                  <th id='last_name' onClick={this.props.sort}><i className={!this.props.sortCheck.last_name ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> Last name</th>
-                  <th id='email' onClick={this.props.sort}><i className={!this.props.sortCheck.email ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> Email</th>
-                  <th id='phone' onClick={this.props.sort}><i className={!this.props.sortCheck.phone ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> Phone</th>
-                </tr>
+         <th id='id' onClick={this.props.sort}><i className={!this.props.sortCheck.id ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> id</th>
+         <th id='first_name' onClick={this.props.sort}><i className={!this.props.sortCheck.first_name ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> First name</th>
+         <th id='last_name' onClick={this.props.sort}><i className={!this.props.sortCheck.last_name ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> Last name</th>
+         <th id='email' onClick={this.props.sort}><i className={!this.props.sortCheck.email ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> Email</th>
+         <th id='phone' onClick={this.props.sort}><i className={!this.props.sortCheck.phone ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> Phone</th>
+     </tr>
     )
   }
 }
@@ -182,11 +191,18 @@ class Inf extends React.Component {
     )
   }
 }
-
+App.propTypes = propTypesApp;
 
 //импортный пагинатор
 //https://github.com/cornflourblue/react-pagination-example/blob/master/src/components/Pagination.jsx
 //http://jasonwatmore.com/post/2017/03/14/react-pagination-example-with-logic-like-google
+const propTypes = {
+    items: PropTypes.array.isRequired,
+    onChangePage: PropTypes.func.isRequired,
+    initialPage: PropTypes.number,
+    pageSize: PropTypes.number
+}
+
 const defaultProps = {
     initialPage: 1,
     pageSize: 10
@@ -296,6 +312,7 @@ class Pagination extends React.Component {
         );
     }
 }
+Pagination.propTypes = propTypes;
 Pagination.defaultProps = defaultProps;
 
 ReactDOM.render(<App/>, document.getElementById("app"));
