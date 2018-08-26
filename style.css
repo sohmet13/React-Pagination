@@ -1,0 +1,114 @@
+@import url(https://fonts.googleapis.com/css?family=Courgette);
+body {
+  background: #E8E3DA; }
+
+h1 {
+  color: #6B665E;
+  font: bold 35px Courgette;
+  text-align: center; }
+
+#ChooseTable {
+  text-align: center; }
+  #ChooseTable h2 {
+    color: #6B665E;
+    font: 25px Courgette;
+    text-align: center; }
+  #ChooseTable button {
+    background: #6B665E;
+    color: #E8E3DA;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    width: 80px;
+    height: 40px;
+    border-radius: 5px;
+    margin: 0 35px; }
+    #ChooseTable button:hover {
+      background: #817C73; }
+
+#table {
+  height: 600px;
+  position: relative;
+  background: #6B665E;
+  min-width: 700px;
+  max-width: 900px;
+  margin: auto; }
+  #table div input {
+    background: #E8E3DA;
+    border: none;
+    outline-color: #FEFAF4;
+    margin: 40px 0 20px 5%;
+    height: 18px;
+    color: #6B665E; }
+  #table div button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    width: 50px;
+    height: 20px;
+    margin: 0 10px;
+    background: #E8E3DA;
+    color: #6B665E; }
+  #table table {
+    margin: auto;
+    min-width: 500px;
+    max-width: 800px;
+    width: 90%;
+    background: transparent;
+    color: #FEFAF4;
+    border-collapse: collapse;
+    overflow: hidden;
+    text-align: left;
+    border: 2px solid transparent; }
+    #table table tr {
+      border: solid 1px #E8E3DA;
+      height: 40px; }
+      #table table tr th {
+        cursor: pointer; }
+    #table table .id {
+      padding-left: 10px; }
+
+p {
+  text-align: center; }
+  p i {
+    margin: auto;
+    color: #6B665E;
+    font-size: 170px; }
+
+ul {
+  position: absolute;
+  bottom: 10px;
+  list-style-type: none; }
+  ul li {
+    display: inline-block;
+    padding-top: 5px;
+    text-align: center;
+    background: #E8E3DA;
+    color: #6B665E;
+    margin: 0 5px;
+    overflow: hidden;
+    height: 25px;
+    width: 30px; }
+    ul li a {
+      display: block;
+      cursor: pointer;
+      height: inherit;
+      width: inherit; }
+
+.active {
+  background: #5B564F;
+  color: #E8E3DA; }
+
+#inf {
+  position: absolute;
+  max-width: 55%;
+  top: 10px;
+  right: 5%;
+  background: transparent;
+  margin: auto; }
+  #inf p {
+    color: #FEFAF4;
+    text-align: left;
+    margin: 10px; }
+
+/*# sourceMappingURL=style.css.map */
