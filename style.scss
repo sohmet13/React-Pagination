@@ -89,9 +89,8 @@ h1 {
     }
   }
 }
-p{
+p {
   text-align: center;
-  margin-top: 20%;
   i {
     margin: auto;
     color:$midnight;
@@ -110,11 +109,13 @@ ul {
     color: $midnight;
     margin: 0 5px;
     overflow: hidden;
+    height: 25px;
+    width: 30px;
     a {
-      display: inline-block;
+      display: block;
       cursor: pointer;
-      height: 25px;
-      width: 30px;
+      height: inherit;
+      width:  inherit;
     }
   }
 }
