@@ -3,11 +3,11 @@
 
 //colors
 //https://pigment.shapefactory.co/?d=0&s=0&a=E8E3DA&b=6B665E
-$shilo: #E8E3DA;
-$midnight: #6B665E;
-$midlight: #817C73;
-$shilolight: #FEFAF4;
-$flintdark: #5B564F;
+$shilo: #e8e3da;
+$midnight: #6b665e;
+$midlight: #817c73;
+$shilolight: #fefaf4;
+$flintdark: #5b564f;
 
 body {
   background: $shilo;
@@ -37,9 +37,9 @@ h1 {
     &:hover {
       background: $midlight;
     }
-  } 
+  }
 }
-#table{
+#table {
   height: 600px;
   position: relative;
   background: $midnight;
@@ -47,7 +47,7 @@ h1 {
   max-width: 900px;
   margin: auto;
   div {
-    input{
+    input {
       background: $shilo;
       border: none;
       outline-color: $shilolight;
@@ -96,7 +96,7 @@ p {
   text-align: center;
   i {
     margin: auto;
-    color:$midnight;
+    color: $midnight;
     font-size: 170px;
   }
 }
@@ -106,7 +106,7 @@ ul {
   bottom: 10px;
   list-style-type: none;
   li {
-    display: inline-block;   
+    display: inline-block;
     padding-top: 5px;
     text-align: center;
     background: $shilo;
@@ -120,7 +120,7 @@ ul {
       display: block;
       cursor: pointer;
       height: inherit;
-      width:  inherit;
+      width: inherit;
     }
   }
 }
@@ -131,7 +131,7 @@ ul {
 #inf {
   position: absolute;
   max-width: 55%;
-  top:10px;
+  top: 10px;
   right: 5%;
   background: transparent;
   margin: auto;

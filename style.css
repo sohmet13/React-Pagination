@@ -1,106 +1,126 @@
 @import url(https://fonts.googleapis.com/css?family=Courgette);
 body {
-  background: #E8E3DA; }
+  background: #e8e3da;
+}
 
 h1 {
-  color: #6B665E;
+  color: #6b665e;
   font: bold 35px Courgette;
-  text-align: center; }
+  text-align: center;
+}
 
 #ChooseTable {
-  text-align: center; }
-  #ChooseTable h2 {
-    color: #6B665E;
-    font: 25px Courgette;
-    text-align: center; }
-  #ChooseTable button {
-    background: #6B665E;
-    color: #E8E3DA;
-    cursor: pointer;
-    border: none;
-    outline: none;
-    width: 80px;
-    height: 40px;
-    border-radius: 5px;
-    margin: 0 35px; }
-    #ChooseTable button:hover {
-      background: #817C73; }
+  text-align: center;
+}
+#ChooseTable h2 {
+  color: #6b665e;
+  font: 25px Courgette;
+  text-align: center;
+}
+#ChooseTable button {
+  background: #6b665e;
+  color: #e8e3da;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  width: 80px;
+  height: 40px;
+  border-radius: 5px;
+  margin: 0 35px;
+}
+#ChooseTable button:hover {
+  background: #817c73;
+}
 
 #table {
   height: 600px;
   position: relative;
-  background: #6B665E;
+  background: #6b665e;
   min-width: 700px;
   max-width: 900px;
-  margin: auto; }
-  #table div input {
-    background: #E8E3DA;
-    border: none;
-    outline-color: #FEFAF4;
-    margin: 40px 0 20px 5%;
-    height: 18px;
-    color: #6B665E; }
-  #table div button {
-    cursor: pointer;
-    border: none;
-    outline: none;
-    width: 50px;
-    height: 20px;
-    margin: 0 10px;
-    background: #E8E3DA;
-    color: #6B665E; }
-  #table table {
-    margin: auto;
-    min-width: 500px;
-    max-width: 800px;
-    width: 90%;
-    background: transparent;
-    color: #FEFAF4;
-    border-collapse: collapse;
-    text-align: left; }
-    #table table tr {
-      border-top: solid 1px #E8E3DA;
-      height: 40px; }
-      #table table tr th {
-        text-align: left;
-        cursor: pointer; }
-    #table table .id {
-      padding-left: 10px; }
-    #table table #headTable {
-      border-top: none; }
+  margin: auto;
+}
+#table div input {
+  background: #e8e3da;
+  border: none;
+  outline-color: #fefaf4;
+  margin: 40px 0 20px 5%;
+  height: 18px;
+  color: #6b665e;
+}
+#table div button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  width: 50px;
+  height: 20px;
+  margin: 0 10px;
+  background: #e8e3da;
+  color: #6b665e;
+}
+#table table {
+  margin: auto;
+  min-width: 500px;
+  max-width: 800px;
+  width: 90%;
+  background: transparent;
+  color: #fefaf4;
+  border-collapse: collapse;
+  text-align: left;
+}
+#table table tr {
+  border-top: solid 1px #e8e3da;
+  height: 40px;
+}
+#table table tr th {
+  text-align: left;
+  cursor: pointer;
+}
+#table table .id {
+  padding-left: 10px;
+}
+#table table #headTable {
+  border-top: none;
+}
 
 p {
-  text-align: center; }
-  p i {
-    margin: auto;
-    color: #6B665E;
-    font-size: 170px; }
+  text-align: center;
+}
+p i {
+  margin: auto;
+  color: #6b665e;
+  font-size: 170px;
+}
 
 ul {
   position: absolute;
   left: -10px;
   bottom: 10px;
-  list-style-type: none; }
-  ul li {
-    display: inline-block;
-    padding-top: 5px;
-    text-align: center;
-    background: #E8E3DA;
-    color: #6B665E;
-    margin: 0 5px;
-    overflow: hidden;
-    height: 25px;
-    width: 30px; }
-    ul li a {
-      outline: none;
-      display: block;
-      cursor: pointer;
-      height: inherit;
-      width: inherit; }
+  list-style-type: none;
+}
+ul li {
+  display: inline-block;
+  padding-top: 5px;
+  text-align: center;
+  background: #e8e3da;
+  color: #6b665e;
+  margin: 0 5px;
+  overflow: hidden;
+  height: 25px;
+  width: 30px;
+}
+ul li a {
+  outline: none;
+  display: block;
+  cursor: pointer;
+  height: inherit;
+  width: inherit;
+}
 
 .active {
-  background: #5B564F;
-  color: #E8E3DA; }
+  background: #5b564f;
+  color: #e8e3da;
+}
 
 #inf {
   position: absolute;
@@ -108,10 +128,10 @@ ul {
   top: 10px;
   right: 5%;
   background: transparent;
-  margin: auto; }
-  #inf p {
-    color: #FEFAF4;
-    text-align: left;
-    margin: 10px; }
-
-/*# sourceMappingURL=style.css.map */
+  margin: auto;
+}
+#inf p {
+  color: #fefaf4;
+  text-align: left;
+  margin: 10px;
+}
