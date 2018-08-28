@@ -14,14 +14,17 @@
   <body id="app">
   	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
     <script type="text/babel" >
-	const propTypesApp = {
-  check: PropTypes.bool.isRequired,
-  checkInf: PropTypes.bool.isRequired,
-  pageOfItems: PropTypes.array.isRequired,
-  data: PropTypes.array,
-  currentData: PropTypes.array,
-  name: PropTypes.string,
-  address: PropTypes.string
+		const propTypesApp = {
+    check: PropTypes.bool.isRequired,
+    checkInf: PropTypes.bool.isRequired,
+    data: PropTypes.array,
+    currentData: PropTypes.array,
+    name: PropTypes.string,
+    address: PropTypes.string,
+    pageNum: PropTypes.number,
+    pageCount: PropTypes.number,
+    choice: PropTypes.string,
+    pageData: PropTypes.array,
 }
 
 class App extends React.Component {
@@ -29,15 +32,12 @@ class App extends React.Component {
     super(props)
     this.state ={
       check: true,
-      data: '',
-      currentData: '',
-      pageOfItems: [],
-      checkInf: false
+      checkInf: false,
+      pageNum: 0
     }
     this.sorted = {id: false, first_name: true, last_name: true, email: true, phone: true};
     this.load = this.load.bind(this);
     this.getData = this.getData.bind(this);
-    this.onChangePage = this.onChangePage.bind(this);
     this.search = this.search.bind(this);
     this.sort = this.sort.bind(this);
     this.inf = this.inf.bind(this);
@@ -56,25 +56,54 @@ class App extends React.Component {
       url="https://my.api.mockaroo.com/big_data.json?key=88b60d20";
     } 
     axios.get(url)
-      .then(data => {this.setState({ data: data.data, currentData: data.data})});
+      .then(data => { return this.setState({data: data.data, currentData:data.data, pageData: data.data.slice(0, this.props.perPage), pageCount: Math.ceil(data.data.length / this.props.perPage)})
+      console.log(data)
+      });
+   }
+  handlePageClick = (data) => {
+    let li = document.getElementsByTagName('li');
+    if (li[0]) {
+      for (let i=0; i<li.length; i++) {
+       li[i].setAttribute("class", "");
+      }
     }
-   onChangePage(pageOfItems) {
-        // update state with new page of items
-        this.setState({ pageOfItems: pageOfItems });
-  }
+    let selected = data.selected; //page number - 1
+    let start = this.props.perPage*selected;
+    this.setState({
+      pageData: this.state.currentData.slice(start, start+this.props.perPage),
+      pageNum: selected
+    });
+  };
   search() {
     let search = document.getElementById("search").value.toLowerCase();
     let filter = (item) => {
       for (let key in item) {
-       if ((key==='id' ||key==='first_name' ||key==='last_name' || key==='email' || key==='phone') && item[key].toString().toLowerCase().includes(search)) {
+       if ((key==='id' ||key==='first_name' ||key==='last_name' || key==='email' || key==='phone') && item[key].toString().toLowerCase().indexOf(search)>=0 /*IE doesn't support 'includes' method*/) {
           return item;
        }
       }
     }
-   let data = this.state.data.filter(filter) 
+    let data = this.state.data.filter(filter); 
+    let num = this.props.perPage*this.state.pageNum;
+    let start = num<data.length ? num: 0;
+    let pageNum = Math.ceil(data.length / this.props.perPage);
+    let li = document.getElementsByTagName('li');
+    let statePageNum = this.state.pageNum;
     this.setState({
-      currentData: (data.length>0) ? data : [{}]
+      currentData: data,
+      pageData: data.slice(start, start+this.props.perPage),
+      pageCount: pageNum,
     });
+    setTimeout(function() {
+      //console.log(pageNum, statePageNum, li[0])
+      if (statePageNum>pageNum && li[0]) {
+        //console.log(statePageNum>pageNum, li[0])
+        li[0].setAttribute("class", "active");
+      }
+      if (statePageNum<pageNum && statePageNum!==0 && li[0]) {
+        li[0].setAttribute("class", "");
+      }
+    }, 100);
   }
   sort(e) {
     let value = e.target.id || e.target.parentNode.id;
@@ -95,14 +124,17 @@ class App extends React.Component {
        this.sorted[key] =true;
     }
     this.sorted[value] = !isSorted;
-     /*заимствованный изначальный метод
+     /*изначальный метод
        http://jsraccoon.ru/react-sort-and-search
     const sorted = [].slice.call(this.state.currentData).sort(sort);*/
     let sorted = this.state.currentData.slice().sort(sort);
     let sortedData = this.state.data.slice().sort(sort);
+    let num = this.state.pageNum*this.props.perPage;
+    let start = num<sorted.length ? num : 0;
     this.setState({
       data: sortedData,
-      currentData: sorted
+      currentData: sorted,
+      pageData: sorted.slice(start, start+this.props.perPage),
    }) 
   }
   inf(e) {
@@ -128,19 +160,25 @@ class App extends React.Component {
             {this.state.checkInf && <Inf name={this.state.name} address={this.state.address}/>}
             <table>
               <HeadTable sort={this.sort} sortCheck={this.sorted}/>
-			  <tbody>
-               {this.state.pageOfItems.map((a) => 
-                     <tr key={'key'+a.id} onClick={this.inf} id={a.id}>
-                       <td className='id' key={a.id}>{a.id}</td>
-                       <td key={a.first_name}>{a.first_name}</td>
-                       <td key={a.last_name}>{a.last_name}</td>
-                       <td key={a.email}>{a.email}</td>
-                       <td key={a.phone}>{a.phone}</td>
-                     </tr>
-                )}
-			  </tbody>
+                  {this.state.pageData.map((a) => 
+                     <tbody key={'tkey'+a.id}>
+                        <tr key={'key'+a.id} onClick={this.inf} id={a.id}>
+                           <td className='id' key={a.id}>{a.id}</td>
+                           <td key={a.first_name}>{a.first_name}</td>
+                           <td key={a.last_name}>{a.last_name}</td>
+                           <td key={a.email}>{a.email}</td>
+                           <td key={a.phone}>{a.phone}</td>
+                         </tr>
+                      </tbody>
+                   )}
              </table>
-            <Pagination items={this.state.currentData} onChangePage={this.onChangePage}/>
+            <PaginationBoxView
+               //forcePage={this.state.pageNum}
+               pageCount={this.state.pageCount}
+               marginPagesDisplayed={3}
+               pageRangeDisplayed={5}
+               onPageChange={this.handlePageClick}
+               activeClassName={"active"} />
           </div>}
       </main>
     )
@@ -210,129 +248,306 @@ class Inf extends React.Component {
   }
 }
 
-//импортный пагинатор
-//https://github.com/cornflourblue/react-pagination-example/blob/master/src/components/Pagination.jsx
-//http://jasonwatmore.com/post/2017/03/14/react-pagination-example-with-logic-like-google
-const propTypes = {
-    items: PropTypes.array.isRequired,
-    onChangePage: PropTypes.func.isRequired,
-    initialPage: PropTypes.number,
-    pageSize: PropTypes.number
+/*импортный пагинатор
+https://github.com/AdeleD/react-paginate/tree/master/react_components
+https://github.com/AdeleD/react-paginate/blob/master/demo/js/demo.js
+*/
+const BreakView = (props) => {
+  const label = props.breakLabel;
+  const className = props.breakClassName || 'break';
+
+  return (
+    <li className={className}>
+      {label}
+    </li>
+  );
 }
+const PageView = (props) => {
+  let cssClassName = props.pageClassName;
+  const linkClassName = props.pageLinkClassName;
+  const onClick = props.onClick;
+  const href = props.href;
+  let ariaLabel = 'Page ' + props.page +
+    (props.extraAriaContext ? ' ' + props.extraAriaContext : '');
+  let ariaCurrent = null;
 
-const defaultProps = {
-    initialPage: 1,
-    pageSize: 10
+  if (props.selected) {
+    ariaCurrent = 'page';
+    ariaLabel = 'Page ' + props.page + ' is your current page';
+    if (typeof(cssClassName) !== 'undefined') {
+      cssClassName = cssClassName + ' ' + props.activeClassName;
+    } else {
+      cssClassName = props.activeClassName;
+    }
+  }
+
+  return (
+      <li className={cssClassName}>
+          <a onClick={onClick}
+             role="button"
+             className={linkClassName}
+             href={href}
+             tabIndex="0"
+             aria-label={ariaLabel}
+             aria-current={ariaCurrent}
+             onKeyPress={onClick}>
+            {props.page}
+          </a>
+      </li>
+  )
 }
+class PaginationBoxView extends React.Component {
+  static propTypes = {
+    pageCount             : PropTypes.number.isRequired,
+    pageRangeDisplayed    : PropTypes.number.isRequired,
+    marginPagesDisplayed  : PropTypes.number.isRequired,
+    previousLabel         : PropTypes.node,
+    nextLabel             : PropTypes.node,
+    breakLabel            : PropTypes.node,
+    hrefBuilder           : PropTypes.func,
+    onPageChange          : PropTypes.func,
+    initialPage           : PropTypes.number,
+    forcePage             : PropTypes.number,
+    disableInitialCallback: PropTypes.bool,
+    containerClassName    : PropTypes.string,
+    pageClassName         : PropTypes.string,
+    pageLinkClassName     : PropTypes.string,
+    activeClassName       : PropTypes.string,
+    previousClassName     : PropTypes.string,
+    nextClassName         : PropTypes.string,
+    previousLinkClassName : PropTypes.string,
+    nextLinkClassName     : PropTypes.string,
+    disabledClassName     : PropTypes.string,
+    breakClassName        : PropTypes.string
+  }
 
-class Pagination extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { pager: {} };
+  static defaultProps = {
+    pageCount             : 10,
+    pageRangeDisplayed    : 2,
+    marginPagesDisplayed  : 3,
+    activeClassName       : "selected",
+    previousClassName     : "previous",
+    nextClassName         : "next",
+    previousLabel         : "Previous",
+    nextLabel             : "Next",
+    breakLabel            : "...",
+    disabledClassName     : "disabled",
+    disableInitialCallback: false,
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selected: props.initialPage ? props.initialPage :
+                props.forcePage   ? props.forcePage :
+                0
     }
-    componentWillMount() {
-        // set page if items array isn't empty
-        if (this.props.items && this.props.items.length) {
-            this.setPage(this.props.initialPage);
+  }
+
+  componentDidMount() {
+    const { initialPage, disableInitialCallback } = this.props;
+    // Call the callback with the initialPage item:
+    if (typeof(initialPage) !== 'undefined' && !disableInitialCallback) {
+      this.callCallback(initialPage);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (typeof(nextProps.forcePage) !== 'undefined' && this.props.forcePage !== nextProps.forcePage) {
+      this.setState({selected: nextProps.forcePage});
+    }
+  }
+
+  handlePreviousPage = evt => {
+    const { selected } = this.state;
+    evt.preventDefault ? evt.preventDefault() : (evt.returnValue = false);
+    if (selected > 0) {
+      this.handlePageSelected(selected - 1, evt);
+    }
+  };
+
+  handleNextPage = evt => {
+    const { selected } = this.state;
+    const { pageCount } = this.props;
+
+    evt.preventDefault ? evt.preventDefault() : (evt.returnValue = false);
+    if (selected < pageCount - 1) {
+      this.handlePageSelected(selected + 1, evt);
+    }
+  };
+
+  handlePageSelected = (selected, evt) => {
+    evt.preventDefault ? evt.preventDefault() : (evt.returnValue = false);
+
+    if (this.state.selected === selected) return;
+
+    this.setState({selected: selected});
+
+    // Call the callback with the new selected item:
+    this.callCallback(selected);
+  };
+
+  hrefBuilder(pageIndex) {
+    const { hrefBuilder, pageCount } = this.props;
+    if (hrefBuilder &&
+      pageIndex !== this.state.selected &&
+      pageIndex >= 0 &&
+      pageIndex < pageCount
+    ) {
+      return hrefBuilder(pageIndex + 1);
+    }
+  }
+
+  callCallback = (selectedItem) => {
+    if (typeof(this.props.onPageChange) !== "undefined" &&
+        typeof(this.props.onPageChange) === "function") {
+      this.props.onPageChange({selected: selectedItem});
+    }
+  };
+
+  getPageElement(index) {
+    const { selected } = this.state;
+    const {
+      pageClassName,
+      pageLinkClassName,
+      activeClassName,
+      extraAriaContext
+    } = this.props;
+
+    return <PageView
+      key={index}
+      onClick={this.handlePageSelected.bind(null, index)}
+      selected={selected === index}
+      pageClassName={pageClassName}
+      pageLinkClassName={pageLinkClassName}
+      activeClassName={activeClassName}
+      extraAriaContext={extraAriaContext}
+      href={this.hrefBuilder(index)}
+      page={index + 1} />
+  }
+
+  pagination = () => {
+    const items = [];
+    const {
+      pageRangeDisplayed,
+      pageCount,
+      marginPagesDisplayed,
+      breakLabel,
+      breakClassName
+    } = this.props;
+
+    const { selected } = this.state;
+
+    if (pageCount <= pageRangeDisplayed) {
+
+      for (let index = 0; index < pageCount; index++) {
+        items.push(this.getPageElement(index));
+      }
+
+    } else {
+
+      let leftSide  = (pageRangeDisplayed / 2);
+      let rightSide = (pageRangeDisplayed - leftSide);
+
+      if (selected > pageCount - pageRangeDisplayed / 2) {
+        rightSide = pageCount - selected;
+        leftSide  = pageRangeDisplayed - rightSide;
+      }
+      else if (selected < pageRangeDisplayed / 2) {
+        leftSide  = selected;
+        rightSide = pageRangeDisplayed - leftSide;
+      }
+
+      let index;
+      let page;
+      let breakView;
+      let createPageView = (index) => this.getPageElement(index);
+
+      for (index = 0; index < pageCount; index++) {
+
+        page = index + 1;
+
+        if (page <= marginPagesDisplayed) {
+          items.push(createPageView(index));
+          continue;
         }
-    }
-    componentDidUpdate(prevProps, prevState) {
-        // reset page if items array has changed
-        if (this.props.items !== prevProps.items) {
-            this.setPage(this.props.initialPage);
-        }
-    }
-    setPage(page) {
-        var { items, pageSize } = this.props;
-        var pager = this.state.pager;
 
-        if (page < 1 || page > pager.totalPages) {
-            return;
-        }
-        // get new pager object for specified page
-        pager = this.getPager(items.length, page, pageSize);
-        // get new page of items from items array
-        var pageOfItems = items.slice(pager.startIndex, pager.endIndex + 1);
-        // update state
-        this.setState({ pager: pager });
-        // call change page function in parent component
-        this.props.onChangePage(pageOfItems);
-    }
-
-    getPager(totalItems, currentPage, pageSize) {
-        // default to first page
-        currentPage = currentPage || 1;
-
-        // default page size is 10
-        pageSize = pageSize || 10;
-
-        // calculate total pages
-        var totalPages = Math.ceil(totalItems / pageSize);
-
-        var startPage, endPage;
-        if (totalPages <= 10) {
-            // less than 10 total pages so show all
-            startPage = 1;
-            endPage = totalPages;
-        } else {
-            // more than 10 total pages so calculate start and end pages
-            if (currentPage <= 6) {
-                startPage = 1;
-                endPage = 10;
-            } else if (currentPage + 4 >= totalPages) {
-                startPage = totalPages - 9;
-                endPage = totalPages;
-            } else {
-                startPage = currentPage - 5;
-                endPage = currentPage + 4;
-            }
+        if (page > pageCount - marginPagesDisplayed) {
+          items.push(createPageView(index));
+          continue;
         }
 
-        // calculate start and end item indexes
-        var startIndex = (currentPage - 1) * pageSize;
-        var endIndex = Math.min(startIndex + pageSize - 1, totalItems - 1);
-
-        // create an array of pages to ng-repeat in the pager control
-        var pages = [...Array((endPage + 1) - startPage).keys()].map(i => startPage + i);
-
-        // return object with all pager properties required by the view
-        return {
-            totalItems: totalItems,
-            currentPage: currentPage,
-            pageSize: pageSize,
-            totalPages: totalPages,
-            startPage: startPage,
-            endPage: endPage,
-            startIndex: startIndex,
-            endIndex: endIndex,
-            pages: pages
-        };
-    }
-
-    render() {
-        var pager = this.state.pager;
-
-        if (!pager.pages || pager.pages.length <= 1) {
-            // don't display pager if there is only 1 page
-            return null;
+        if ((index >= selected - leftSide) && (index <= selected + rightSide)) {
+          items.push(createPageView(index));
+          continue;
         }
 
-        return (
-            <ul className="pagination">
-                {pager.pages.map((page, index) =>
-                    <li key={index} className={pager.currentPage === page ? 'active' : ''}>
-                        <a onClick={() => this.setPage(page)}>{page}</a>
-                    </li>
-                )}
-                
-            </ul>
-        );
+        if (breakLabel && items[items.length - 1] !== breakView) {
+          breakView = (
+            <BreakView
+              key={index}
+              breakLabel={breakLabel}
+              breakClassName={breakClassName}
+            />
+          );
+          items.push(breakView);
+        }
+      }
     }
-}
-Pagination.propTypes = propTypes;
-Pagination.defaultProps = defaultProps;
 
-ReactDOM.render(<App/>, document.getElementById("app"));
+    return items;
+  };
+
+  render() {
+    const {
+      disabledClassName,
+      previousClassName,
+      nextClassName,
+      pageCount,
+      containerClassName,
+      previousLinkClassName,
+      previousLabel,
+      nextLinkClassName,
+      nextLabel
+    } = this.props;
+
+    const { selected } = this.state;
+
+    const previousClasses = previousClassName + (selected === 0 ? ` ${disabledClassName}` : '');
+    const nextClasses = nextClassName + (selected === pageCount - 1 ? ` ${disabledClassName}` : '');
+    //I don't need previous and next button right now
+    return (
+      <ul className={containerClassName}>
+        {/*<li className={previousClasses}>
+          <a onClick={this.handlePreviousPage}
+             className={previousLinkClassName}
+             href={this.hrefBuilder(selected - 1)}
+             tabIndex="0"
+             role="button"
+             onKeyPress={this.handlePreviousPage}>
+            {previousLabel}
+          </a>
+        </li>*/}
+
+        {this.pagination()}
+
+        {/*<li className={nextClasses}>
+          <a onClick={this.handleNextPage}
+             className={nextLinkClassName}
+             href={this.hrefBuilder(selected + 1)}
+             tabIndex="0"
+             role="button"
+             onKeyPress={this.handleNextPage}>
+            {nextLabel}
+          </a>
+        </li>*/}
+      </ul>
+    );
+  }
+};
+
+ReactDOM.render(<App perPage={10}/>, document.getElementById("app"));
 	</script>
   </body>
 </html>

@@ -74,18 +74,21 @@ h1 {
     background: transparent;
     color: $shilolight;
     border-collapse: collapse;
-    overflow: hidden;
+    //overflow: hidden;
     text-align: left;
-    border: 2px solid transparent;
     tr {
-      border: solid 1px $shilo;
+      border-top: solid 1px $shilo;
       height: 40px;
       th {
+        text-align: left; //for IE
         cursor: pointer;
       }
     }
     .id {
       padding-left: 10px;
+    }
+    #headTable {
+      border-top: none;
     }
   }
 }
@@ -99,6 +102,7 @@ p {
 }
 ul {
   position: absolute;
+  left: -10px;
   bottom: 10px;
   list-style-type: none;
   li {
@@ -112,6 +116,7 @@ ul {
     height: 25px;
     width: 30px;
     a {
+      outline: none;
       display: block;
       cursor: pointer;
       height: inherit;

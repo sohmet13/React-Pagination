@@ -57,16 +57,17 @@ h1 {
     background: transparent;
     color: #FEFAF4;
     border-collapse: collapse;
-    overflow: hidden;
-    text-align: left;
-    border: 2px solid transparent; }
+    text-align: left; }
     #table table tr {
-      border: solid 1px #E8E3DA;
+      border-top: solid 1px #E8E3DA;
       height: 40px; }
       #table table tr th {
+        text-align: left;
         cursor: pointer; }
     #table table .id {
       padding-left: 10px; }
+    #table table #headTable {
+      border-top: none; }
 
 p {
   text-align: center; }
@@ -77,6 +78,7 @@ p {
 
 ul {
   position: absolute;
+  left: -10px;
   bottom: 10px;
   list-style-type: none; }
   ul li {
@@ -90,6 +92,7 @@ ul {
     height: 25px;
     width: 30px; }
     ul li a {
+      outline: none;
       display: block;
       cursor: pointer;
       height: inherit;
