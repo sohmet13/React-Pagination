@@ -14,28 +14,34 @@
   <body id="app">
   	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
     <script type="text/babel" >
-			const propTypesApp = {
-    check: PropTypes.bool.isRequired,
-    checkInf: PropTypes.bool.isRequired,
-    data: PropTypes.array,
-    currentData: PropTypes.array,
-    name: PropTypes.string,
-    address: PropTypes.string,
-    pageNum: PropTypes.number,
-    pageCount: PropTypes.number,
-    choice: PropTypes.string,
-    pageData: PropTypes.array,
-}
+const propTypesApp = {
+  check: PropTypes.bool.isRequired,
+  checkInf: PropTypes.bool.isRequired,
+  data: PropTypes.array,
+  currentData: PropTypes.array,
+  name: PropTypes.string,
+  address: PropTypes.string,
+  pageNum: PropTypes.number,
+  pageCount: PropTypes.number,
+  choice: PropTypes.string,
+  pageData: PropTypes.array
+};
 
 class App extends React.Component {
   constructor(props) {
-    super(props)
-    this.state ={
+    super(props);
+    this.state = {
       check: true,
       checkInf: false,
       pageNum: 0
-    }
-    this.sorted = {id: false, first_name: true, last_name: true, email: true, phone: true};
+    };
+    this.sorted = {
+      id: false,
+      first_name: true,
+      last_name: true,
+      email: true,
+      phone: true
+    };
     this.load = this.load.bind(this);
     this.getData = this.getData.bind(this);
     this.search = this.search.bind(this);
@@ -50,157 +56,182 @@ class App extends React.Component {
   }
   getData() {
     let url;
-    if (this.state.choice==='small') {
-      url="https://my.api.mockaroo.com/small_data.json?key=88b60d20"; 
-    } else if (this.state.choice==='big') {
-      url="https://my.api.mockaroo.com/big_data.json?key=88b60d20";
-    } 
-    axios.get(url)
-      .then(data => { return this.setState({data: data.data, currentData:data.data, pageData: data.data.slice(0, this.props.perPage), pageCount: Math.ceil(data.data.length / this.props.perPage)})
-      console.log(data)
-      });
-   }
-  handlePageClick = (data) => {
-    let li = document.getElementsByTagName('li');
-    if (li[0]) {
-      for (let i=0; i<li.length; i++) {
-       li[i].setAttribute("class", "");
-      }
+    if (this.state.choice === "small") {
+      url = "https://my.api.mockaroo.com/small_data.json?key=88b60d20";
+    } else if (this.state.choice === "big") {
+      url = "https://my.api.mockaroo.com/big_data.json?key=88b60d20";
     }
+    axios.get(url).then(data => {
+      return this.setState({
+        data: data.data,
+        currentData: data.data,
+        pageData: data.data.slice(0, this.props.perPage),
+        pageCount: Math.ceil(data.data.length / this.props.perPage)
+      });
+      //console.log(data)
+    });
+  }
+  handlePageClick = data => {
     let selected = data.selected; //page number - 1
-    let start = this.props.perPage*selected;
+    let start = this.props.perPage * selected;
     this.setState({
-      pageData: this.state.currentData.slice(start, start+this.props.perPage),
+      pageData: this.state.currentData.slice(start, start + this.props.perPage),
       pageNum: selected
     });
   };
   search() {
     let search = document.getElementById("search").value.toLowerCase();
-    let filter = (item) => {
+    let filter = item => {
       for (let key in item) {
-       if ((key==='id' ||key==='first_name' ||key==='last_name' || key==='email' || key==='phone') && item[key].toString().toLowerCase().indexOf(search)>=0 /*IE doesn't support 'includes' method*/) {
+        if (
+          (key === "id" ||
+            key === "first_name" ||
+            key === "last_name" ||
+            key === "email" ||
+            key === "phone") &&
+          item[key]
+            .toString()
+            .toLowerCase()
+            .indexOf(search) >= 0 /*IE doesn't support 'includes' method*/
+        ) {
           return item;
-       }
+        }
       }
-    }
-    let data = this.state.data.filter(filter); 
-    let num = this.props.perPage*this.state.pageNum;
-    let start = num<data.length ? num: 0;
+    };
+    let data = this.state.data.filter(filter);
     let pageNum = Math.ceil(data.length / this.props.perPage);
-    let li = document.getElementsByTagName('li');
-    let statePageNum = this.state.pageNum;
+    if (this.state.pageNum > pageNum) {
+      this.setState({
+        pageNum: 0
+      });
+    }
+    let num = this.props.perPage * this.state.pageNum;
+    let start = num < data.length ? num : 0;
     this.setState({
       currentData: data,
-      pageData: data.slice(start, start+this.props.perPage),
-      pageCount: pageNum,
+      pageData: data.slice(start, start + this.props.perPage),
+      pageCount: pageNum
     });
-    setTimeout(function() {
-      //console.log(pageNum, statePageNum, li[0])
-      if (statePageNum>pageNum && li[0]) {
-        //console.log(statePageNum>pageNum, li[0])
-        li[0].setAttribute("class", "active");
-      }
-      if (statePageNum<pageNum && statePageNum!==0 && li[0]) {
-        li[0].setAttribute("class", "");
-      }
-    }, 100);
   }
   sort(e) {
     let value = e.target.id || e.target.parentNode.id;
     let isSorted = this.sorted[value];
     let direction = isSorted ? 1 : -1;
     let sort = (a, b) => {
-      if (typeof a[value] ==='number' && typeof b[value]==='number') {
-        {if (a[value] > b[value]) {return direction}
-         if (a[value] < b[value]) {return direction * -1}
-         return 0}
+      if (typeof a[value] === "number" && typeof b[value] === "number") {
+        {
+          if (a[value] > b[value]) {
+            return direction;
+          }
+          if (a[value] < b[value]) {
+            return direction * -1;
+          }
+          return 0;
+        }
       } else {
-        {if (a[value].toLowerCase() > b[value].toLowerCase()) {return direction}
-         if (a[value].toLowerCase() < b[value].toLowerCase()) {return direction * -1}
-         return 0}
+        {
+          if (a[value].toLowerCase() > b[value].toLowerCase()) {
+            return direction;
+          }
+          if (a[value].toLowerCase() < b[value].toLowerCase()) {
+            return direction * -1;
+          }
+          return 0;
+        }
       }
     };
     for (let key in this.sorted) {
-       this.sorted[key] =true;
+      this.sorted[key] = true;
     }
     this.sorted[value] = !isSorted;
-     /*изначальный метод
+    /*изначальный метод
        http://jsraccoon.ru/react-sort-and-search
     const sorted = [].slice.call(this.state.currentData).sort(sort);*/
     let sorted = this.state.currentData.slice().sort(sort);
     let sortedData = this.state.data.slice().sort(sort);
-    let num = this.state.pageNum*this.props.perPage;
-    let start = num<sorted.length ? num : 0;
+    let num = this.state.pageNum * this.props.perPage;
+    let start = num < sorted.length ? num : 0;
     this.setState({
       data: sortedData,
       currentData: sorted,
-      pageData: sorted.slice(start, start+this.props.perPage),
-   }) 
+      pageData: sorted.slice(start, start + this.props.perPage)
+    });
   }
   inf(e) {
     let value = e.target.parentNode.id;
-    let obj = this.state.data[value-1];
-    let name = obj.first_name+' '+obj.last_name;
-    let address = obj.country+', '+obj.city +', '+ obj.address;
+    let obj = this.state.data[value - 1];
+    let name = obj.first_name + " " + obj.last_name;
+    let address = obj.country + ", " + obj.city + ", " + obj.address;
     this.setState({
       checkInf: true,
       name: name,
       address: address
-    })
+    });
   }
   render() {
     return (
       <main>
         <Head />
         {this.state.check && <ChooseTable load={this.load} />}
-        {(!this.state.check && !this.state.data) && <Load getData={this.getData} />}
-        {this.state.data &&
-          <div id='table'>
-            <Search search={this.search}/>
-            {this.state.checkInf && <Inf name={this.state.name} address={this.state.address}/>}
+        {!this.state.check &&
+          !this.state.data && <Load getData={this.getData} />}
+        {this.state.data && (
+          <div id="table">
+            <Search search={this.search} />
+            {this.state.checkInf && (
+              <Inf name={this.state.name} address={this.state.address} />
+            )}
             <table>
-              <HeadTable sort={this.sort} sortCheck={this.sorted}/>
-                  {this.state.pageData.map((a) => 
-                     <tbody key={'tkey'+a.id}>
-                        <tr key={'key'+a.id} onClick={this.inf} id={a.id}>
-                           <td className='id' key={a.id}>{a.id}</td>
-                           <td key={a.first_name}>{a.first_name}</td>
-                           <td key={a.last_name}>{a.last_name}</td>
-                           <td key={a.email}>{a.email}</td>
-                           <td key={a.phone}>{a.phone}</td>
-                         </tr>
-                      </tbody>
-                   )}
-             </table>
+              <HeadTable sort={this.sort} sortCheck={this.sorted} />
+              {this.state.pageData.map(a => (
+                <tbody key={"tkey" + a.id}>
+                  <tr key={"key" + a.id} onClick={this.inf} id={a.id}>
+                    <td className="id" key={a.id}>
+                      {a.id}
+                    </td>
+                    <td key={a.first_name}>{a.first_name}</td>
+                    <td key={a.last_name}>{a.last_name}</td>
+                    <td key={a.email}>{a.email}</td>
+                    <td key={a.phone}>{a.phone}</td>
+                  </tr>
+                </tbody>
+              ))}
+            </table>
             <PaginationBoxView
-               //forcePage={this.state.pageNum}
-               pageCount={this.state.pageCount}
-               marginPagesDisplayed={3}
-               pageRangeDisplayed={5}
-               onPageChange={this.handlePageClick}
-               activeClassName={"active"} />
-          </div>}
+              //forcePage={this.state.pageNum}
+              pageCount={this.state.pageCount}
+              marginPagesDisplayed={3}
+              pageRangeDisplayed={5}
+              onPageChange={this.handlePageClick}
+              activeClassName={"active"}
+            />
+          </div>
+        )}
       </main>
-    )
+    );
   }
 }
 App.propTypes = propTypesApp;
 
 class Head extends React.Component {
   render() {
-    return <h1>React Pagination</h1>
+    return <h1>React Pagination</h1>;
   }
 }
 
 class ChooseTable extends React.Component {
   render() {
     return (
-      <div id='ChooseTable'>
+      <div id="ChooseTable">
         <h2>What kind of data do you want to see on this page?</h2>
-        <button type='button' onClick={this.props.load} value='big'>Big data</button>
-        <button type='button' onClick={this.props.load} value='small'>Small data</button> 
+        <button type="button" onClick={this.props.load} value="big">
+          Big data
+        </button>
+        <button type="button" onClick={this.props.load} value="small">
+          Small data
+        </button>
       </div>
-    )
+    );
   }
 }
 class Load extends React.Component {
@@ -208,154 +239,208 @@ class Load extends React.Component {
     this.props.getData();
   }
   render() {
-    return(
-    <div>
-      <p><i className="fa fa-spinner fa-spin fa-3x" aria-hidden="true"></i></p>
-    </div>)
+    return (
+      <div>
+        <p>
+          <i className="fa fa-spinner fa-spin fa-3x" aria-hidden="true" />
+        </p>
+      </div>
+    );
   }
 }
 class Search extends React.Component {
   render() {
     return (
       <div>
-        <input placeholder='Search in results' id='search'/>
+        <input placeholder="Search in results" id="search" />
         <button onClick={this.props.search}>Find</button>
       </div>
-    )
+    );
   }
 }
 class HeadTable extends React.Component {
   render() {
     return (
-      <tr id='headTable'>
-         <th id='id' onClick={this.props.sort}><i className={!this.props.sortCheck.id ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> id</th>
-         <th id='first_name' onClick={this.props.sort}><i className={!this.props.sortCheck.first_name ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> First name</th>
-         <th id='last_name' onClick={this.props.sort}><i className={!this.props.sortCheck.last_name ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> Last name</th>
-         <th id='email' onClick={this.props.sort}><i className={!this.props.sortCheck.email ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> Email</th>
-         <th id='phone' onClick={this.props.sort}><i className={!this.props.sortCheck.phone ? "fa fa-sort-asc": "fa fa-sort-desc"} aria-hidden="true"></i> Phone</th>
-     </tr>
-    )
+      <tr id="headTable">
+        <th id="id" onClick={this.props.sort}>
+          <i
+            className={
+              !this.props.sortCheck.id ? "fa fa-sort-asc" : "fa fa-sort-desc"
+            }
+            aria-hidden="true"
+          />{" "}
+          id
+        </th>
+        <th id="first_name" onClick={this.props.sort}>
+          <i
+            className={
+              !this.props.sortCheck.first_name
+                ? "fa fa-sort-asc"
+                : "fa fa-sort-desc"
+            }
+            aria-hidden="true"
+          />{" "}
+          First name
+        </th>
+        <th id="last_name" onClick={this.props.sort}>
+          <i
+            className={
+              !this.props.sortCheck.last_name
+                ? "fa fa-sort-asc"
+                : "fa fa-sort-desc"
+            }
+            aria-hidden="true"
+          />{" "}
+          Last name
+        </th>
+        <th id="email" onClick={this.props.sort}>
+          <i
+            className={
+              !this.props.sortCheck.email ? "fa fa-sort-asc" : "fa fa-sort-desc"
+            }
+            aria-hidden="true"
+          />{" "}
+          Email
+        </th>
+        <th id="phone" onClick={this.props.sort}>
+          <i
+            className={
+              !this.props.sortCheck.phone ? "fa fa-sort-asc" : "fa fa-sort-desc"
+            }
+            aria-hidden="true"
+          />{" "}
+          Phone
+        </th>
+      </tr>
+    );
   }
 }
 class Inf extends React.Component {
   render() {
-    return(
-      <div id='inf'>
-        <p><b>User:</b> {this.props.name}</p>
-        <p><b>Address:</b> {this.props.address}</p>
+    return (
+      <div id="inf">
+        <p>
+          <b>User:</b> {this.props.name}
+        </p>
+        <p>
+          <b>Address:</b> {this.props.address}
+        </p>
       </div>
-    )
+    );
   }
 }
 
-/*импортный пагинатор
+/*импортный пагинатор c моими исправлениями под мой проект: убрала кнопки "следующий" и "предыдущий" и изменила логику назначения страницы активной при поиске. Теперь, если при поиске, число страниц, соттвествующих поиску, меньше, чем число страниц до поиска, активной становится первая страница.
 https://github.com/AdeleD/react-paginate/tree/master/react_components
 https://github.com/AdeleD/react-paginate/blob/master/demo/js/demo.js
 */
-const BreakView = (props) => {
+const BreakView = props => {
   const label = props.breakLabel;
-  const className = props.breakClassName || 'break';
+  const className = props.breakClassName || "break";
 
-  return (
-    <li className={className}>
-      {label}
-    </li>
-  );
-}
-const PageView = (props) => {
+  return <li className={className}>{label}</li>;
+};
+const PageView = props => {
   let cssClassName = props.pageClassName;
   const linkClassName = props.pageLinkClassName;
   const onClick = props.onClick;
   const href = props.href;
-  let ariaLabel = 'Page ' + props.page +
-    (props.extraAriaContext ? ' ' + props.extraAriaContext : '');
+  let ariaLabel =
+    "Page " +
+    props.page +
+    (props.extraAriaContext ? " " + props.extraAriaContext : "");
   let ariaCurrent = null;
 
   if (props.selected) {
-    ariaCurrent = 'page';
-    ariaLabel = 'Page ' + props.page + ' is your current page';
-    if (typeof(cssClassName) !== 'undefined') {
-      cssClassName = cssClassName + ' ' + props.activeClassName;
+    ariaCurrent = "page";
+    ariaLabel = "Page " + props.page + " is your current page";
+    if (typeof cssClassName !== "undefined") {
+      cssClassName = cssClassName + " " + props.activeClassName;
     } else {
       cssClassName = props.activeClassName;
     }
   }
 
   return (
-      <li className={cssClassName}>
-          <a onClick={onClick}
-             role="button"
-             className={linkClassName}
-             href={href}
-             tabIndex="0"
-             aria-label={ariaLabel}
-             aria-current={ariaCurrent}
-             onKeyPress={onClick}>
-            {props.page}
-          </a>
-      </li>
-  )
-}
+    <li className={cssClassName}>
+      <a
+        onClick={onClick}
+        role="button"
+        className={linkClassName}
+        href={href}
+        tabIndex="0"
+        aria-label={ariaLabel}
+        aria-current={ariaCurrent}
+        onKeyPress={onClick}
+      >
+        {props.page}
+      </a>
+    </li>
+  );
+};
 class PaginationBoxView extends React.Component {
   static propTypes = {
-    pageCount             : PropTypes.number.isRequired,
-    pageRangeDisplayed    : PropTypes.number.isRequired,
-    marginPagesDisplayed  : PropTypes.number.isRequired,
-    previousLabel         : PropTypes.node,
-    nextLabel             : PropTypes.node,
-    breakLabel            : PropTypes.node,
-    hrefBuilder           : PropTypes.func,
-    onPageChange          : PropTypes.func,
-    initialPage           : PropTypes.number,
-    forcePage             : PropTypes.number,
+    pageCount: PropTypes.number.isRequired,
+    pageRangeDisplayed: PropTypes.number.isRequired,
+    marginPagesDisplayed: PropTypes.number.isRequired,
+    previousLabel: PropTypes.node,
+    nextLabel: PropTypes.node,
+    breakLabel: PropTypes.node,
+    hrefBuilder: PropTypes.func,
+    onPageChange: PropTypes.func,
+    initialPage: PropTypes.number,
+    forcePage: PropTypes.number,
     disableInitialCallback: PropTypes.bool,
-    containerClassName    : PropTypes.string,
-    pageClassName         : PropTypes.string,
-    pageLinkClassName     : PropTypes.string,
-    activeClassName       : PropTypes.string,
-    previousClassName     : PropTypes.string,
-    nextClassName         : PropTypes.string,
-    previousLinkClassName : PropTypes.string,
-    nextLinkClassName     : PropTypes.string,
-    disabledClassName     : PropTypes.string,
-    breakClassName        : PropTypes.string
-  }
+    containerClassName: PropTypes.string,
+    pageClassName: PropTypes.string,
+    pageLinkClassName: PropTypes.string,
+    activeClassName: PropTypes.string,
+    previousClassName: PropTypes.string,
+    nextClassName: PropTypes.string,
+    previousLinkClassName: PropTypes.string,
+    nextLinkClassName: PropTypes.string,
+    disabledClassName: PropTypes.string,
+    breakClassName: PropTypes.string
+  };
 
   static defaultProps = {
-    pageCount             : 10,
-    pageRangeDisplayed    : 2,
-    marginPagesDisplayed  : 3,
-    activeClassName       : "selected",
-    previousClassName     : "previous",
-    nextClassName         : "next",
-    previousLabel         : "Previous",
-    nextLabel             : "Next",
-    breakLabel            : "...",
-    disabledClassName     : "disabled",
-    disableInitialCallback: false,
-  }
+    pageCount: 10,
+    pageRangeDisplayed: 2,
+    marginPagesDisplayed: 3,
+    activeClassName: "selected",
+    previousClassName: "previous",
+    nextClassName: "next",
+    previousLabel: "Previous",
+    nextLabel: "Next",
+    breakLabel: "...",
+    disabledClassName: "disabled",
+    disableInitialCallback: false
+  };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      selected: props.initialPage ? props.initialPage :
-                props.forcePage   ? props.forcePage :
-                0
-    }
+      selected: props.initialPage
+        ? props.initialPage
+        : props.forcePage ? props.forcePage : 0
+    };
   }
 
   componentDidMount() {
     const { initialPage, disableInitialCallback } = this.props;
     // Call the callback with the initialPage item:
-    if (typeof(initialPage) !== 'undefined' && !disableInitialCallback) {
+    if (typeof initialPage !== "undefined" && !disableInitialCallback) {
       this.callCallback(initialPage);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (typeof(nextProps.forcePage) !== 'undefined' && this.props.forcePage !== nextProps.forcePage) {
-      this.setState({selected: nextProps.forcePage});
+    if (
+      typeof nextProps.forcePage !== "undefined" &&
+      this.props.forcePage !== nextProps.forcePage
+    ) {
+      this.setState({ selected: nextProps.forcePage });
     }
   }
 
@@ -382,7 +467,7 @@ class PaginationBoxView extends React.Component {
 
     if (this.state.selected === selected) return;
 
-    this.setState({selected: selected});
+    this.setState({ selected: selected });
 
     // Call the callback with the new selected item:
     this.callCallback(selected);
@@ -390,7 +475,8 @@ class PaginationBoxView extends React.Component {
 
   hrefBuilder(pageIndex) {
     const { hrefBuilder, pageCount } = this.props;
-    if (hrefBuilder &&
+    if (
+      hrefBuilder &&
       pageIndex !== this.state.selected &&
       pageIndex >= 0 &&
       pageIndex < pageCount
@@ -399,10 +485,12 @@ class PaginationBoxView extends React.Component {
     }
   }
 
-  callCallback = (selectedItem) => {
-    if (typeof(this.props.onPageChange) !== "undefined" &&
-        typeof(this.props.onPageChange) === "function") {
-      this.props.onPageChange({selected: selectedItem});
+  callCallback = selectedItem => {
+    if (
+      typeof this.props.onPageChange !== "undefined" &&
+      typeof this.props.onPageChange === "function"
+    ) {
+      this.props.onPageChange({ selected: selectedItem });
     }
   };
 
@@ -415,16 +503,19 @@ class PaginationBoxView extends React.Component {
       extraAriaContext
     } = this.props;
 
-    return <PageView
-      key={index}
-      onClick={this.handlePageSelected.bind(null, index)}
-      selected={selected === index}
-      pageClassName={pageClassName}
-      pageLinkClassName={pageLinkClassName}
-      activeClassName={activeClassName}
-      extraAriaContext={extraAriaContext}
-      href={this.hrefBuilder(index)}
-      page={index + 1} />
+    return (
+      <PageView
+        key={index}
+        onClick={this.handlePageSelected.bind(null, index)}
+        selected={selected === index}
+        pageClassName={pageClassName}
+        pageLinkClassName={pageLinkClassName}
+        activeClassName={activeClassName}
+        extraAriaContext={extraAriaContext}
+        href={this.hrefBuilder(index)}
+        page={index + 1}
+      />
+    );
   }
 
   pagination = () => {
@@ -437,35 +528,35 @@ class PaginationBoxView extends React.Component {
       breakClassName
     } = this.props;
 
+    if (this.state.selected > pageCount - 1) {
+      this.setState({
+        selected: 0
+      });
+    }
     const { selected } = this.state;
 
     if (pageCount <= pageRangeDisplayed) {
-
       for (let index = 0; index < pageCount; index++) {
         items.push(this.getPageElement(index));
       }
-
     } else {
-
-      let leftSide  = (pageRangeDisplayed / 2);
-      let rightSide = (pageRangeDisplayed - leftSide);
+      let leftSide = pageRangeDisplayed / 2;
+      let rightSide = pageRangeDisplayed - leftSide;
 
       if (selected > pageCount - pageRangeDisplayed / 2) {
         rightSide = pageCount - selected;
-        leftSide  = pageRangeDisplayed - rightSide;
-      }
-      else if (selected < pageRangeDisplayed / 2) {
-        leftSide  = selected;
+        leftSide = pageRangeDisplayed - rightSide;
+      } else if (selected < pageRangeDisplayed / 2) {
+        leftSide = selected;
         rightSide = pageRangeDisplayed - leftSide;
       }
 
       let index;
       let page;
       let breakView;
-      let createPageView = (index) => this.getPageElement(index);
+      let createPageView = index => this.getPageElement(index);
 
       for (index = 0; index < pageCount; index++) {
-
         page = index + 1;
 
         if (page <= marginPagesDisplayed) {
@@ -478,7 +569,7 @@ class PaginationBoxView extends React.Component {
           continue;
         }
 
-        if ((index >= selected - leftSide) && (index <= selected + rightSide)) {
+        if (index >= selected - leftSide && index <= selected + rightSide) {
           items.push(createPageView(index));
           continue;
         }
@@ -514,8 +605,11 @@ class PaginationBoxView extends React.Component {
 
     const { selected } = this.state;
 
-    const previousClasses = previousClassName + (selected === 0 ? ` ${disabledClassName}` : '');
-    const nextClasses = nextClassName + (selected === pageCount - 1 ? ` ${disabledClassName}` : '');
+    const previousClasses =
+      previousClassName + (selected === 0 ? ` ${disabledClassName}` : "");
+    const nextClasses =
+      nextClassName +
+      (selected === pageCount - 1 ? ` ${disabledClassName}` : "");
     //I don't need previous and next button right now
     return (
       <ul className={containerClassName}>
@@ -545,9 +639,9 @@ class PaginationBoxView extends React.Component {
       </ul>
     );
   }
-};
+}
 
-ReactDOM.render(<App perPage={10}/>, document.getElementById("app"));
+ReactDOM.render(<App perPage={10} />, document.getElementById("app"));
 	</script>
   </body>
 </html>
